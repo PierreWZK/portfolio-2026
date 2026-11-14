@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { useMotion } from "@/lib/motion";
 import { useTheme } from "@/lib/theme";
-import { lumToAscii, normalize, rgbaToLum } from "./convert";
+import { cellsToAscii, normalize, rgbaToCells, type Cells } from "./convert";
 import { drawPlaceholderPortrait } from "./placeholderPortrait";
 
-// Grille fixe : 64 x 48 caractères. Avec une police à chasse 0,6 em et un interligne de 1,
-// cela donne un cadre au format 4:5 (la taille de police suit la largeur, voir .portrait dans globals.css).
-const COLS = 64;
-const ROWS = 48;
+// Chasse d'un caractère de la police ASCII, en em. Avec un interligne de 1, une case fait 0,6 x 1 em.
+const CHAR_WIDTH = 0.6;
 
 /**
- * Portrait converti en caractères ASCII dans le navigateur.
- * src : photo dans /public (ex. "/portrait.jpg"). null, ou image introuvable : buste provisoire dessiné en code.
+ * Portrait converti en caractères ASCII dans le navigateur, sans cadre.
+ * src : image dans /public, idéalement un PNG à fond transparent (voir scripts/cutout.mjs) :
+ *       seul le sujet est dessiné. null, ou image introuvable : buste provisoire dessiné en code.
+ * cols : nombre de caractères en largeur ; la hauteur suit les proportions de l'image.
  * Réagit au pointeur : halo de lumière, léger décalage, quelques caractères qui varient.
  */
-export function AsciiPortrait({ src, alt }: { src: string | null; alt: string }) {
+export function AsciiPortrait({ src, alt, cols = 100 }: { src: string | null; alt: string; cols?: number }) {
   const box = useRef<HTMLDivElement>(null);
   const pre = useRef<HTMLPreElement>(null);
   const theme = useTheme();
@@ -28,29 +28,30 @@ export function AsciiPortrait({ src, alt }: { src: string | null; alt: string })
     if (!boxEl || !preEl) return;
 
     let alive = true;
-    let lum: Float32Array | null = null;
+    let cells: Cells | null = null;
+    let rows = 0;
     let pointer: { x: number; y: number } | null = null;
     let tick = 0;
     let frame = 0;
 
     const render = () => {
       frame = 0;
-      if (!lum) return;
-      preEl.textContent = lumToAscii(lum, COLS, ROWS, {
+      if (!cells) return;
+      preEl.textContent = cellsToAscii(cells, cols, rows, {
         invert: theme === "light",
         boost: motion
           ? (x, y) => {
               let delta = 0;
               if (pointer) {
                 // Halo : la case du pointeur s'éclaircit, l'effet s'éteint à quelques cases.
-                const dx = (x - pointer.x) * 0.6;
+                const dx = (x - pointer.x) * CHAR_WIDTH;
                 const dy = y - pointer.y;
-                delta += 70 * Math.exp(-(dx * dx + dy * dy) / 60);
+                delta += 80 * Math.exp(-(dx * dx + dy * dy) / 90);
               }
               // Scintillement : environ 3 % des cases bougent d'un cran à chaque battement.
               const h = Math.sin(x * 127.1 + y * 311.7 + tick * 74.7) * 43758.5453;
               const r = h - Math.floor(h);
-              if (r < 0.03) delta += r < 0.015 ? 26 : -26;
+              if (r < 0.03) delta += r < 0.015 ? 20 : -20;
               return delta;
             }
           : undefined,
@@ -60,22 +61,22 @@ export function AsciiPortrait({ src, alt }: { src: string | null; alt: string })
       if (!frame) frame = requestAnimationFrame(render);
     };
 
-    // Réduit la source à une case par pixel, en la recadrant pour remplir le cadre.
+    // Réduit la source à une case par pixel. La hauteur en cases suit les proportions de l'image.
     const load = (source: CanvasImageSource, width: number, height: number) => {
-      if (!alive) return;
+      if (!alive || !width || !height) return;
+      rows = Math.max(1, Math.round((cols * CHAR_WIDTH * height) / width));
       const canvas = document.createElement("canvas");
-      canvas.width = COLS;
-      canvas.height = ROWS;
+      canvas.width = cols;
+      canvas.height = rows;
       const c = canvas.getContext("2d", { willReadFrequently: true });
       if (!c) return;
-      const target = 4 / 5;
-      const crop = width / height > target ? { w: height * target, h: height } : { w: width, h: width / target };
-      c.drawImage(source, (width - crop.w) / 2, (height - crop.h) / 2, crop.w, crop.h, 0, 0, COLS, ROWS);
-      lum = normalize(rgbaToLum(c.getImageData(0, 0, COLS, ROWS).data));
+      c.drawImage(source, 0, 0, cols, rows);
+      cells = normalize(rgbaToCells(c.getImageData(0, 0, cols, rows).data));
+      boxEl.style.aspectRatio = `${cols * CHAR_WIDTH} / ${rows}`;
       schedule();
     };
     const loadPlaceholder = () => {
-      const canvas = drawPlaceholderPortrait(theme === "light");
+      const canvas = drawPlaceholderPortrait();
       load(canvas, canvas.width, canvas.height);
     };
 
@@ -93,7 +94,7 @@ export function AsciiPortrait({ src, alt }: { src: string | null; alt: string })
       const rect = boxEl.getBoundingClientRect();
       const nx = (e.clientX - rect.left) / rect.width;
       const ny = (e.clientY - rect.top) / rect.height;
-      pointer = { x: nx * COLS, y: ny * ROWS };
+      pointer = { x: nx * cols, y: ny * rows };
       // Parallaxe : -1..1 autour du centre, lu par le CSS.
       boxEl.style.setProperty("--px", String(nx * 2 - 1));
       boxEl.style.setProperty("--py", String(ny * 2 - 1));
@@ -123,14 +124,10 @@ export function AsciiPortrait({ src, alt }: { src: string | null; alt: string })
       boxEl.removeEventListener("pointermove", onMove);
       boxEl.removeEventListener("pointerleave", onLeave);
     };
-  }, [src, theme, motion]);
+  }, [src, cols, theme, motion]);
 
   return (
-    <div ref={box} className="portrait">
-      <span className="portrait-corner" aria-hidden="true">+</span>
-      <span className="portrait-corner" aria-hidden="true">+</span>
-      <span className="portrait-corner" aria-hidden="true">+</span>
-      <span className="portrait-corner" aria-hidden="true">+</span>
+    <div ref={box} className="portrait" style={{ "--cols": cols } as CSSProperties}>
       <pre ref={pre} role="img" aria-label={alt} className="portrait-art" />
     </div>
   );

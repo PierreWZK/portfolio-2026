@@ -291,7 +291,39 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
     - **Défaut connu** : une adresse de projet inconnue (`/projets/inconnu`) affiche bien la page 404 mais avec un **code HTTP 200** (la page commence à être envoyée avant que `notFound()` soit atteint, à cause du `Suspense`). Sans gravité tant que le site est en `noindex` ; à corriger avant d'ouvrir l'indexation (phase 7).
   - Photo de Pierre : Pierre a déposé `public/portrait.png` (1,1 Mo) et mis `src: "/portrait.png"` dans `profile.ts` lui-même. Rendu vérifié en local : la conversion marche, on reconnaît un buste. Limites vues : en thème sombre le fond clair de la photo devient un grand aplat de `@` ; le visage manque de détail à 64 colonnes. Le thème clair rend mieux. **Ces deux fichiers ne sont ni commités ni poussés** (photo personnelle, dépôt public : accord de Pierre nécessaire). Le site en ligne montre donc encore le buste provisoire.
 
+- 2026-11-14, **retouche demandée par Pierre** (avec une capture de référence, portfolio « Davor G. Zelic », et une image des mains de La Création d'Adam) : portrait sans bordure, photo en héros de la page, même rendu que la référence ; pied de page centré avec les mains en ASCII.
+  - **Détourage** : `scripts/cutout.mjs` (sharp) rend le fond transparent. Il part des bords haut, gauche, droit et efface le fond clair, neutre ou bleuté ; il ne passe que par les zones larges (érosion de 4 px), sinon le fond fuyait dans les verres de lunettes par un trou de la monture. Résultat : `public/portrait-cutout.png` (900×757). Réglé pour un ciel ou un mur clair derrière un sujet aux tons chauds ou sombres ; pour une autre photo, fournir un PNG déjà détouré.
+  - **Conversion** (`convert.ts`, refait) : masque par opacité, fond vide, sujet toujours « encré » avec la rampe dense de la référence `^~!?7YJ5PGB#&@` (plus d'espace dans la rampe). Contraste étiré sur le sujet seul.
+  - **`AsciiPortrait`** : plus de cadre, de coins ni de légende. 100 colonnes, hauteur selon les proportions de l'image, caractères gras. Survol, parallaxe et scintillement gardés ; le fond ne bouge jamais.
+  - **Hero** (`about/page.tsx`) : texte à gauche (titre plus grand, métier, présentation, les trois paragraphes, boutons, puis situation, lieu, e-mail en petit), portrait en bas à droite, posé sur le trait du pied de page. Sur mobile : portrait sous le texte, pleine largeur. Nouveaux champs optionnels `status` et `location` dans le profil (fictifs).
+  - **Pied de page** (`Footer.tsx`) : centré. Mains de La Création d'Adam en ASCII (110×17 caractères), puis liens et option animations. L'art est **pré-calculé** par `scripts/ascii-art.mjs` dans `creationArt.ts`, en deux versions (encre sombre / encre claire) affichées selon le thème. L'image source fournie par Pierre n'est **pas** copiée dans le projet (licence de cette illustration inconnue ; l'œuvre de Michel-Ange est dans le domaine public).
+  - `sharp` ajouté en dépendance de développement (scripts).
+  - Testé : `npm test` (19), lint, build. Playwright : portrait 100×50 sans bordure, collé au pied de page (écart 0 px) à 320, 375, 768, 1024, 1280, 1440 px, sans débordement ; mains affichées selon le thème ; survol qui ne touche pas le fond ; animations coupées = figé ; photo bloquée = buste provisoire détouré. Aucune erreur console.
+  - Non testé : lecteur d'écran, vrai téléphone. Audit axe non relancé après cette retouche.
+  - Raté puis corrigé : première version du détourage, les verres de lunettes disparaissaient (fuite par la monture).
+  - **Rien de cette retouche n'est commité ni en ligne** (elle dépend de la photo, à publier seulement avec l'accord de Pierre). `public/portrait.png` (photo d'origine, 1,1 Mo) n'est plus utilisée : à ne pas commiter, ou à supprimer.
+
+- 2026-11-14, **phase 4 : scène 3D du mode exploration**. Pierre a dit « Non continue le développement et on poussera ensuite » : on ne publie rien pour l'instant, on avance sur le bureau 3D.
+  - Ajout de `three`, `@react-three/fiber`, `@react-three/drei` (React Three Fiber 9, compatible React 19). Pas de GSAP, pas de modèle externe : **tout est en formes Three.js écrites en code**, aucun fichier 3D téléchargé, donc aucune licence à vérifier.
+  - `src/components/exploration/` :
+    - `ExplorationLoader.tsx` : charge la scène par `dynamic(..., { ssr: false })`, détecte WebGL, affiche sinon un message et un bouton vers le mode classique.
+    - `scene/Workspace.tsx` : `Canvas`, lumières (ambiance, clair de lune par la fenêtre avec ombres 1024, plafonnier chaud), caméra orbitale bornée (pas de déplacement latéral, distance 3,2 à 9, angles limités : on ne passe ni derrière les murs ni sous le sol). Sur écran en hauteur la caméra recule (× 1,7).
+    - `scene/Room.tsx` : sol, tapis, deux murs, plinthes, fenêtre avec vue de nuit dessinée sur un canvas (ciel, étoiles, lune, montagnes : rappel du paysage de l'accueil).
+    - `scene/palette.ts` : couleurs de la scène.
+    - `objects/Furniture.tsx` : bureau, ordinateur (écran avec texte dessiné), téléphone, lampe (avec sa lumière), étagères, livres, plante, cadres, post-it, horloge à l'heure réelle, chaise.
+    - `objects/Character.tsx` : personnage assis en capsules et sphères. Animations par sinus : respiration, buste qui oscille, tête qui bouge, regard vers la fenêtre toutes les 12 s environ.
+  - **Nombre d'objets piloté par les données** : un livre par formation (3), un cadre par réalisation (4), un post-it par catégorie de compétences (5).
+  - `/exploration` : la scène plein écran, titre, boutons « Mode classique » et « Choix du mode », option animations, consigne de manipulation. La page dit que **les objets ne sont pas encore interactifs** (phase 5).
+  - Animations coupées : `frameloop="demand"`, la scène ne se redessine que si la caméra bouge.
+  - Performances mesurées (Playwright, machine de Pierre) : **60 images/s** en 1280×800 et en 375×700, **150 appels de dessin, 8 884 triangles**, 5 textures. Animations coupées : 0 image rendue en 2 s.
+  - Vérifié : Three.js n'est demandé ni sur `/` ni sur `/about`, seulement sur `/exploration`. Sans WebGL (simulé) : pas de canvas, message et bouton vers le mode classique. Mobile 375 px : pas de débordement, bureau entier dans le cadre. `npm test` (19), lint, build passent. Aucune erreur console.
+  - Non testé : vrai téléphone (performances réelles, pincement), Safari, Firefox, lecteur d'écran. La mesure à 60 images/s vient d'un ordinateur de bureau, pas d'un mobile.
+  - Raté puis corrigé : première version trop sombre (murs presque noirs) ; cheveux qui couvraient le visage ; sur mobile, scène cadrée trop serrée et consigne illisible sur la scène ; la consigne « Glisser pour tourner » s'affichait même sans WebGL.
+  - Piège de test : `page.addInitScript` (WebGL coupé pour tester le repli) reste actif dans l'onglet Playwright ; ouvrir un nouvel onglet pour les tests 3D suivants.
+  - Rien n'est commité ni poussé.
+
 ## 7. En attente
+- **Validation par Pierre de la phase 4 (scène 3D)**, puis phase 5 : objets cliquables (lueur, survol, étiquette), zoom caméra, interface dans l'écran, livre qui s'ouvre, cadres, post-it, téléphone, horloge, évolution de la pièce.
 - Étape 8 faite sauf la branche `master` et la PR.
 - **À faire par Pierre** : créer `master` sur GitHub (interface web : menu des branches, saisir `master`, « Create branch from feat/mode-classique », puis Settings → Default branch), ou autoriser cette action. Ensuite Claude ouvre la PR ou repasse Coolify sur `master`.
 - **Décisions de Pierre** : publier ou non la photo (commit + push + déploiement) ; améliorer ou non le rendu du portrait (plus de colonnes, fond atténué).

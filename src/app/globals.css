@@ -261,46 +261,44 @@
     }
   }
 
-  /* --- Portrait ASCII : 64 x 48 caractères, format 4:5.
-     La police suit la largeur du cadre : 64 colonnes x 0,6 em = 38,4 em. --- */
+  /* --- Portrait ASCII, sans cadre. La police suit la largeur du bloc :
+     --cols colonnes x 0,6 em de chasse. Les proportions viennent de l'image (posées en JS). --- */
   .portrait {
-    position: relative;
     container-type: inline-size;
     width: 100%;
-    aspect-ratio: 4 / 5;
-    padding: 0;
-    border: 1px solid var(--line);
-    overflow: hidden;
+    aspect-ratio: 6 / 5;
     /* Au doigt, le défilement vertical de la page reste possible par-dessus le portrait. */
     touch-action: pan-y;
   }
-  .portrait-art {
+  .portrait-art,
+  .ascii-art {
     margin: 0;
     font-family: var(--font-ascii), ui-monospace, monospace;
-    font-size: calc(100cqw / 38.4);
+    font-weight: 700;
+    font-size: calc(100cqw / (var(--cols) * 0.6));
     line-height: 1;
     letter-spacing: 0;
     white-space: pre;
     user-select: none;
     color: var(--text);
+  }
+  .portrait-art {
     /* Parallaxe : le dessin glisse à l'opposé du pointeur (--px, --py entre -1 et 1). */
-    transform: translate(calc(var(--px, 0) * -6px), calc(var(--py, 0) * -6px)) scale(1.03);
+    transform: translate(calc(var(--px, 0) * -6px), calc(var(--py, 0) * -4px));
     transition: transform 250ms ease-out;
   }
-  .portrait-corner {
-    position: absolute;
-    z-index: 1;
-    font-family: var(--font-ascii), ui-monospace, monospace;
-    font-size: 0.75rem;
-    line-height: 1;
-    color: var(--gold);
-    transform: translate(calc(var(--px, 0) * 3px), calc(var(--py, 0) * 3px));
-    transition: transform 250ms ease-out;
+  /* Dessin ASCII fixe (pied de page) : une version par thème, car l'encre s'inverse entre clair et sombre. */
+  .ascii-figure {
+    container-type: inline-size;
+    width: 100%;
   }
-  .portrait-corner:nth-of-type(1) { top: 6px; left: 8px; }
-  .portrait-corner:nth-of-type(2) { top: 6px; right: 8px; }
-  .portrait-corner:nth-of-type(3) { bottom: 6px; left: 8px; }
-  .portrait-corner:nth-of-type(4) { bottom: 6px; right: 8px; }
+  .ascii-art[data-for="light"],
+  [data-theme="light"] .ascii-art[data-for="dark"] {
+    display: none;
+  }
+  [data-theme="light"] .ascii-art[data-for="light"] {
+    display: block;
+  }
 
   /* --- Changement de thème : le nouveau thème se dévoile de gauche à droite,
      précédé d'un front de caractères ASCII (masque en trois couches :

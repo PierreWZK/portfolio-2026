@@ -1,25 +1,19 @@
-// Buste dessiné en code, utilisé tant qu'aucune photo n'est fournie (ou si elle ne charge pas).
-// Il passe par la même conversion ASCII qu'une vraie photo.
-// light : fond blanc pour le thème clair, afin que le fond reste vide une fois converti.
+// Buste dessiné en code sur fond transparent, utilisé tant qu'aucune photo n'est fournie
+// (ou si elle ne charge pas). Il passe par la même conversion ASCII qu'une vraie photo détourée.
 
-export function drawPlaceholderPortrait(light: boolean): HTMLCanvasElement {
+export function drawPlaceholderPortrait(): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.width = 200;
-  canvas.height = 250;
+  canvas.width = 240;
+  canvas.height = 200;
   const c = canvas.getContext("2d")!;
-
-  c.fillStyle = light ? "#fff" : "#000";
-  c.fillRect(0, 0, 200, 250);
 
   // Lumière venant du haut à gauche.
   const shade = (x0: number, y0: number, x1: number, y1: number) => {
     const g = c.createLinearGradient(x0, y0, x1, y1);
-    g.addColorStop(0, light ? "#c4c4c4" : "#fff");
-    g.addColorStop(1, light ? "#4a4a4a" : "#555");
+    g.addColorStop(0, "#f2f2f2");
+    g.addColorStop(1, "#4a4a4a");
     return g;
   };
-  const dark = light ? "#111" : "#262626";
-
   const ellipse = (x: number, y: number, rx: number, ry: number, fill: string | CanvasGradient) => {
     c.fillStyle = fill;
     c.beginPath();
@@ -27,16 +21,15 @@ export function drawPlaceholderPortrait(light: boolean): HTMLCanvasElement {
     c.fill();
   };
 
-  ellipse(100, 292, 118, 86, shade(0, 200, 200, 260)); // épaules
-  c.fillStyle = light ? "#777" : "#8c8c8c"; // cou
-  c.fillRect(78, 158, 44, 60);
-  ellipse(100, 108, 56, 70, shade(40, 40, 170, 190)); // visage
-  ellipse(100, 62, 62, 44, dark); // cheveux
-  ellipse(47, 100, 11, 44, dark);
-  ellipse(153, 100, 11, 44, dark);
-  ellipse(80, 110, 9, 5, dark); // yeux
-  ellipse(120, 110, 9, 5, dark);
-  ellipse(105, 134, 4, 11, light ? "#666" : "#999"); // ombre du nez
-  ellipse(100, 152, 15, 3.5, dark); // bouche
+  ellipse(120, 252, 130, 84, shade(0, 160, 240, 220)); // épaules
+  c.fillStyle = "#8c8c8c"; // cou
+  c.fillRect(100, 118, 40, 60);
+  ellipse(120, 76, 46, 58, shade(70, 20, 180, 150)); // visage
+  ellipse(120, 38, 51, 34, "#161616"); // cheveux
+  ellipse(77, 70, 9, 36, "#161616");
+  ellipse(163, 70, 9, 36, "#161616");
+  ellipse(104, 78, 8, 4, "#161616"); // yeux
+  ellipse(136, 78, 8, 4, "#161616");
+  ellipse(120, 112, 12, 3, "#333"); // bouche
   return canvas;
 }

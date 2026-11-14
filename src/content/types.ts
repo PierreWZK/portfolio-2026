@@ -4,6 +4,10 @@ export type Profile = {
   name: string;
   role: string;
   tagline: string;
+  /** Situation actuelle, affichée en petit dans le hero (ex. recherche de poste). Optionnel. */
+  status?: string;
+  /** Ville, pays. Optionnel. */
+  location?: string;
   /** Présentation courte du hero. */
   intro: string;
   /** Paragraphes de la page About me. */

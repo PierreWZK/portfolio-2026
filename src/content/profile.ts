@@ -5,6 +5,8 @@ export const profile: Profile = {
   name: "Camille Aubrac",
   role: "Développeuse full-stack & creative developer",
   tagline: "Développeuse passionnée par la création d'expériences digitales uniques.",
+  status: "Disponible pour de nouvelles missions.",
+  location: "Annecy, France",
   intro:
     "Je conçois des interfaces qui se lisent vite et dont on se souvient : du premier croquis au déploiement, avec le même soin pour le code que pour le détail visible.",
   about: [
@@ -12,8 +14,9 @@ export const profile: Profile = {
     "Depuis cinq ans, je construis des applications web pour des studios, des associations et mes propres projets. J'aime les outils simples, les pages rapides et les interfaces accessibles à tout le monde.",
     "En dehors de l'écran : la randonnée en moyenne montagne, la typographie et les vieux terminaux, qui ont donné son allure à ce site.",
   ],
-  // Photo : déposer le fichier dans /public, puis mettre src: "/portrait.jpg".
-  portrait: { src: null, alt: "Portrait de Camille Aubrac en caractères ASCII" },
+  // Photo : la détourer (node scripts/cutout.mjs photo.png public/portrait-cutout.png),
+  // ou déposer un PNG à fond transparent dans /public, puis mettre son chemin dans src.
+  portrait: { src: "/portrait-cutout.png", alt: "Portrait de Camille Aubrac en caractères ASCII" },
 };
 
 // CONTENU TEMPORAIRE : coordonnées fictives.
