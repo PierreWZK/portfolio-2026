@@ -273,8 +273,18 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
 - Étape 7, **non testé** : l'envoi SMTP réel (aucun serveur ni identifiant), lecteur d'écran, toucher sur vrai téléphone, limitation de débit (rien n'est en place contre le spam hors champ piège).
 - Étape 7, échec : les champs apparaissaient sans bordure ni fond. Le CSS servi ne contenait pas `.field` (cache de compilation Turbopack, malgré un redémarrage). Corrigé par une vraie modification de `globals.css`. Même piège qu'aux étapes 1, 4 et 5 : **quand une classe CSS ne s'applique pas, vérifier qu'elle est dans le CSS servi, et modifier réellement le fichier.**
 
+- 2026-11-14, **étape 8** (finitions, GitHub, Coolify), lancée par « Oui, étape 8 » :
+  - Audit accessibilité avec axe-core (règles WCAG 2 A/AA, 2.1 AA et bonnes pratiques) sur 11 pages × 2 thèmes × 2 largeurs (1280 et 375 px) : **aucun défaut**, aucun débordement, un seul `h1` par page. Contrôle de l'audit : un défaut de contraste et une image sans `alt` plantés exprès sont bien détectés. axe-core désinstallé ensuite.
+  - Parcours clavier complet sur `/contact` : ordre logique, focus visible sur chaque élément.
+  - Site **non indexé** tant que le contenu est fictif : `src/app/robots.ts` (tout interdit) et `robots: noindex` dans `layout.tsx`. À inverser en phase 7 (avec sitemap, canonical, JSON-LD, aperçu de lien).
+  - Pied de page : lien « 30 jours, 30 projets » vers https://projectp.fr/.
+  - `Dockerfile` (Node 22 alpine, `next start`, port 3000), `.dockerignore`, `README.md` réécrit, `.env.example` suivi par git.
+  - Commit `10541b0` sur la branche locale `feat/mode-classique` (base : `master`, commit initial `38f4189`). **Rien n'est poussé.**
+  - **Bloqué** : `PierreWZK/portfolio` n'est pas libre, ce nom redirige vers le dépôt existant `My-Portfolio` (ancien nom). Existent aussi `My_PortfolioV2` et `portfolioKevin`. Nom du nouveau dépôt à choisir par Pierre. Coolify pas commencé (dépend du dépôt).
+
 ## 7. En attente
-- Étape 7 faite, validation par Pierre en attente.
+- Étape 7 faite, validée par « Oui, étape 8 ».
+- **Nom du dépôt GitHub à choisir par Pierre**, puis : pousser la branche, créer `master` via `gh api` (git-guard bloque les push et toute commande git qui cite master), PR, application Coolify sur `portfolio.projectp.fr`.
 - Pour l'envoi réel : identifiants SMTP de Pierre (serveur, port, utilisateur, mot de passe d'application), à mettre dans `.env.local` (non commité). Sans eux, le formulaire reste en repli `mailto:`.
 - Étape 8 (finitions) : tests responsive et accessibilité complets, optimisation, dépôt GitHub sur `master`, Coolify. Pas encore commencée.
 - Plus tard : identifiants SMTP pour le formulaire, photo du portrait, vraies informations (phase 7).

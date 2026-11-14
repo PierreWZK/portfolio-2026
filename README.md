@@ -9,7 +9,7 @@ Un portfolio personnel à deux modes, qui partagent les mêmes données :
 
 Le contenu actuel est **fictif** (personne inventée) en attendant les vraies informations. Le site n'est donc pas indexé (`robots.ts`).
 
-Site : https://portfolio.projectp.fr
+Site : https://portfolio.projectp.fr · Dépôt : https://github.com/PierreWZK/portfolio-2026
 
 ## Lancer en local
 
