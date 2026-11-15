@@ -2,28 +2,29 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { C } from "./palette";
 
-/** Vue de nuit derrière la fenêtre : ciel, étoiles, lune, montagnes. Dessinée en code. */
-function useNightView() {
+/** Vue derrière la fenêtre : ciel, étoiles, lune, montagnes. Dessinée en code. dawn : le jour se lève. */
+function useWindowView(dawn: boolean) {
   return useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 320;
     const c = canvas.getContext("2d")!;
     const sky = c.createLinearGradient(0, 0, 0, 320);
-    sky.addColorStop(0, "#0b1020");
-    sky.addColorStop(1, "#27324d");
+    sky.addColorStop(0, dawn ? "#3b4a78" : "#0b1020");
+    sky.addColorStop(1, dawn ? "#e8a878" : "#27324d");
     c.fillStyle = sky;
     c.fillRect(0, 0, 256, 320);
     // Étoiles à positions fixes (pseudo-hasard stable).
     c.fillStyle = "#edeae3";
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < (dawn ? 12 : 60); i++) {
       const x = (Math.sin(i * 127.1) * 43758.5453) % 1;
       const y = (Math.sin(i * 311.7) * 43758.5453) % 1;
       c.fillRect(Math.abs(x) * 256, Math.abs(y) * 200, i % 7 === 0 ? 2 : 1, i % 7 === 0 ? 2 : 1);
     }
     c.fillStyle = "#d9c28f";
     c.beginPath();
-    c.arc(190, 70, 20, 0, Math.PI * 2);
+    // Nuit : la lune en haut. Aube : le soleil qui pointe derrière les crêtes.
+    c.arc(dawn ? 120 : 190, dawn ? 200 : 70, dawn ? 30 : 20, 0, Math.PI * 2);
     c.fill();
     const ridge = (color: string, base: number, peaks: [number, number][]) => {
       c.fillStyle = color;
@@ -40,12 +41,12 @@ function useNightView() {
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
-  }, []);
+  }, [dawn]);
 }
 
 /** La pièce : sol, deux murs, plinthes, tapis, fenêtre sur le mur de gauche. */
-export function Room() {
-  const view = useNightView();
+export function Room({ dawn = false }: { dawn?: boolean }) {
+  const view = useWindowView(dawn);
   return (
     <group>
       <mesh rotation-x={-Math.PI / 2} receiveShadow>

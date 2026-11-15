@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { ExplorationUI } from "./ExplorationUI";
 
 // La scène (Three.js) n'est téléchargée qu'ici, jamais sur l'accueil ni dans le mode classique.
 const Workspace = dynamic(() => import("./scene/Workspace"), {
@@ -54,11 +55,10 @@ export function ExplorationLoader() {
   return (
     <>
       <Workspace />
-      {/* Consigne affichée seulement quand la scène existe. */}
-      <p className="pointer-events-none absolute bottom-16 left-4 right-4 max-w-md bg-bg/80 px-3 py-2 font-mono text-xs text-muted sm:bottom-6 sm:left-6 sm:right-auto">
-        Glisser pour tourner, molette ou pincement pour zoomer. Les objets ne sont pas encore interactifs : tout le
-        contenu est dans le mode classique.
-      </p>
+      {/* Au-dessus du calque HTML de la scène (écran, pages du livre). */}
+      <div className="pointer-events-none absolute inset-0 z-[2]">
+        <ExplorationUI />
+      </div>
     </>
   );
 }

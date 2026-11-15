@@ -322,8 +322,34 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
   - Piège de test : `page.addInitScript` (WebGL coupé pour tester le repli) reste actif dans l'onglet Playwright ; ouvrir un nouvel onglet pour les tests 3D suivants.
   - Rien n'est commité ni poussé.
 
+- 2026-11-15, **phase 5 : interactions 3D**. Pierre a validé la phase 4 (« Tu peux continuer ») et autorisé les commits locaux (« Tu peux commit pas de soucis »). Toujours pas de push.
+  - Commit local `6f9685a` (retouche du hero, pied de page ASCII, scène 3D). `public/portrait.png` (photo d'origine) laissée hors du dépôt.
+  - `scene/store.ts` : état partagé hors de React (objet ouvert, page du livre, étiquette de survol, objets découverts). Les découvertes sont gardées dans `sessionStorage` (`exploration-seen`).
+  - `scene/layout.ts` : positions des objets cliquables et point de vue de la caméra pour chacun.
+  - `scene/Hotspot.tsx` : objet cliquable. Au survol : lueur dorée, léger agrandissement, curseur « main », étiquette près du pointeur. Seul l'objet survolé ou ouvert brille. Téléphone et post-it flottent légèrement.
+  - `scene/CameraRig.tsx` : la caméra glisse vers l'objet ouvert, puis revient. Pendant ce temps le clic-glisser est coupé.
+  - **Ordinateur** : la caméra passe par-dessus l'épaule du personnage, l'écran passe du message d'accueil à la liste des projets (boutons, description, liens), posée **dans l'écran 3D** (`ComputerScreen.tsx`, `Html transform` de drei). Sur téléphone, où l'écran 3D serait illisible, un panneau reprend les projets.
+  - **Livres** (`objects/OpenBook.tsx`) : vrai livre 3D. Il sort de l'étagère, se tourne vers la caméra, la couverture pivote sur le dos, une feuille se tourne. Texte manuscrit (police Caveat, chargée seulement sur `/exploration`), en vrai texte HTML posé sur les pages. Deux doubles pages : titre, puis description et compétences. Boutons page précédente / suivante, livre précédent / suivant ; un clic sur le livre tourne aussi la page.
+  - **Cadres** : la caméra se place face au cadre, un panneau présente la réalisation, avec cadre précédent / suivant.
+  - **Post-it** : ils se décollent et avancent vers la caméra, un panneau montre les catégories de compétences sous forme de notes.
+  - **Téléphone** : son écran s'allume, un panneau en forme de téléphone donne e-mail, GitHub, LinkedIn et un lien vers le formulaire.
+  - **Horloge** : la trotteuse s'emballe, un panneau plus large présente Le futur en frise numérotée.
+  - **Évolution de la pièce** : la lampe s'allume à la première découverte ; l'écran affiche le compteur ; une plante apparaît à 3 découvertes ; à 6/6 le jour se lève derrière la fenêtre.
+  - `ExplorationUI.tsx` : barre des six objets (chacun s'ouvre au clavier ou au toucher, avec marque « déjà vu » et compteur), bouton « Retour au bureau », Échap, et retour du focus clavier sur le bouton de l'objet. **Rien n'est accessible seulement par la 3D.**
+  - Testé (Playwright, 1280×800 et 375×700) : survol et clic direct sur un objet de la scène ; ouverture des six objets ; changement de projet dans l'écran ; page du livre ; cadre suivant ; progression gardée après rechargement ; clavier seul (Tab, Entrée, Échap, retour du focus) ; 61 images/s avec un objet ouvert (93 appels de dessin) ; animations coupées = ouverture instantanée et 0 image rendue ensuite ; mobile sans débordement ni chevauchement. `npm test` (19), lint, build. Aucune erreur console.
+  - Non testé : vrai téléphone (toucher, pincement, performances), Safari et Firefox (le texte posé dans la scène repose sur les transformations CSS 3D), lecteur d'écran.
+  - Limite connue : sur téléphone, le texte du livre 3D est petit (environ 9 px). Le même texte est lu aux lecteurs d'écran et existe dans le mode classique.
+  - Ratés puis corrigés :
+    - Caméra de l'ordinateur placée derrière la tête du personnage : passée par-dessus l'épaule.
+    - **Premier élément `Html` de drei vide** (écran sans contenu). Cause : drei change de cible d'attache après le premier rendu et recrée sa racine React. Corrigé en créant un calque DOM fixe avant la scène (`htmlLayer`, prop `portal`). Cela supprime aussi l'avertissement « synchronously unmount a root ».
+    - Interface de l'écran décalée par rapport au moniteur : en réalité c'était le moniteur qui bougeait, l'agrandissement au survol se faisait autour du centre de la pièce. Le pivot est maintenant au centre de l'objet.
+    - Couverture du livre ouverte qui passait devant la page tournée : elle recule en s'ouvrant.
+    - Étiquettes de survol en `Html` 3D monté / démonté : remplacées par une étiquette DOM qui suit le pointeur.
+    - Lint : les règles React de cette version interdisent de modifier un objet rendu par un hook ; caméra et contrôles sont lus avec `get()` au moment d'agir.
+    - Mobile : en-tête qui recouvrait « Retour au bureau », barre d'objets sur trois lignes, livre trop petit puis trop grand.
+
 ## 7. En attente
-- **Validation par Pierre de la phase 4 (scène 3D)**, puis phase 5 : objets cliquables (lueur, survol, étiquette), zoom caméra, interface dans l'écran, livre qui s'ouvre, cadres, post-it, téléphone, horloge, évolution de la pièce.
+- **Validation par Pierre de la phase 5 (interactions)**, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
 - Étape 8 faite sauf la branche `master` et la PR.
 - **À faire par Pierre** : créer `master` sur GitHub (interface web : menu des branches, saisir `master`, « Create branch from feat/mode-classique », puis Settings → Default branch), ou autoriser cette action. Ensuite Claude ouvre la PR ou repasse Coolify sur `master`.
 - **Décisions de Pierre** : publier ou non la photo (commit + push + déploiement) ; améliorer ou non le rendu du portrait (plus de colonnes, fond atténué).

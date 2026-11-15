@@ -287,7 +287,7 @@
     transform: translate(calc(var(--px, 0) * -6px), calc(var(--py, 0) * -4px));
     transition: transform 250ms ease-out;
   }
-  /* Dessin ASCII fixe (pied de page) : une version par thème, car l'encre s'inverse entre clair et sombre. */
+  /* Dessin ASCII fixe (pied de page) : une version par thème, car l'encre s'inverse entre le clair et le sombre. */
   .ascii-figure {
     container-type: inline-size;
     width: 100%;

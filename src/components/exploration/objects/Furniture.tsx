@@ -1,10 +1,14 @@
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useMotion } from "@/lib/motion";
 import { BOOK_COLORS, C, NOTE_COLORS } from "../scene/palette";
+import { ANCHORS, FRAMES, bookAt, bookHeight } from "../scene/layout";
+import { Hotspot } from "../scene/Hotspot";
+import { useExploration } from "../scene/store";
 
-// Meubles et objets de la pièce, tous en formes simples écrites en code.
-// Les quantités (livres, cadres, post-it) viennent des données du portfolio.
+// Meubles et objets de la pièce, en formes simples écrites en code.
+// Les objets cliquables sont enveloppés dans <Hotspot> ; la pièce évolue avec les découvertes.
 
 type Vec3 = [number, number, number];
 
@@ -35,61 +39,46 @@ export function Desk() {
   );
 }
 
-/** Texte affiché sur l'écran au repos, dessiné sur un canvas. */
-function useScreenTexture() {
-  return useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 320;
-    const c = canvas.getContext("2d")!;
-    c.fillStyle = "#0c0c0e";
-    c.fillRect(0, 0, 512, 320);
-    c.font = "bold 26px monospace";
-    c.fillStyle = "#d9c28f";
-    c.fillText("> WELCOME TO", 36, 110);
-    c.fillText("  MY WORKSPACE_", 36, 150);
-    c.font = "16px monospace";
-    c.fillStyle = "#a09c92";
-    c.fillText("$ ls ~/projets", 36, 210);
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    return texture;
-  }, []);
-}
-
-/** Ordinateur : écran, pied, clavier, souris. */
+/** Ordinateur : écran (l'interface est posée par ComputerScreen), pied, clavier, souris. */
 export function Computer() {
-  const screen = useScreenTexture();
   return (
-    <group position={[0, 0.79, -2.6]}>
-      <Box size={[0.3, 0.02, 0.2]} position={[0, 0.01, 0]} color={C.metal} rough={0.4} />
-      <Box size={[0.05, 0.22, 0.04]} position={[0, 0.12, -0.02]} color={C.metal} rough={0.4} />
-      <Box size={[1.0, 0.62, 0.04]} position={[0, 0.5, 0]} color={C.metal} rough={0.4} />
-      <mesh position={[0, 0.5, 0.022]}>
-        <planeGeometry args={[0.94, 0.56]} />
-        <meshBasicMaterial map={screen} toneMapped={false} />
-      </mesh>
-      <Box size={[0.5, 0.02, 0.16]} position={[0, 0.01, 0.4]} color={C.metal} rough={0.5} />
-      <Box size={[0.07, 0.025, 0.11]} position={[0.42, 0.012, 0.4]} color={C.metal} rough={0.5} />
-    </group>
+    <Hotspot focus={{ kind: "computer" }} at={ANCHORS.computer.at} radius={ANCHORS.computer.radius} label="Ordinateur · mes projets">
+      <group position={[0, 0.79, -2.6]}>
+        <Box size={[0.3, 0.02, 0.2]} position={[0, 0.01, 0]} color={C.metal} rough={0.4} />
+        <Box size={[0.05, 0.22, 0.04]} position={[0, 0.12, -0.02]} color={C.metal} rough={0.4} />
+        <Box size={[1.0, 0.62, 0.04]} position={[0, 0.5, 0]} color={C.metal} rough={0.4} />
+        <mesh position={[0, 0.5, 0.022]}>
+          <planeGeometry args={[0.94, 0.56]} />
+          <meshBasicMaterial color={C.screen} />
+        </mesh>
+        <Box size={[0.5, 0.02, 0.16]} position={[0, 0.01, 0.4]} color={C.metal} rough={0.5} />
+        <Box size={[0.07, 0.025, 0.11]} position={[0.42, 0.012, 0.4]} color={C.metal} rough={0.5} />
+      </group>
+    </Hotspot>
   );
 }
 
 /** Téléphone posé à plat sur le bureau. */
 export function Phone() {
+  const { focus } = useExploration();
+  const lit = focus?.kind === "phone";
   return (
-    <group position={[-0.55, 0.79, -2.2]} rotation-y={0.35}>
-      <Box size={[0.09, 0.012, 0.18]} position={[0, 0.006, 0]} color={C.metal} rough={0.3} />
-      <mesh position={[0, 0.0125, 0]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[0.078, 0.165]} />
-        <meshStandardMaterial color={C.screen} roughness={0.2} />
-      </mesh>
-    </group>
+    <Hotspot focus={{ kind: "phone" }} at={ANCHORS.phone.at} radius={ANCHORS.phone.radius} label="Téléphone · me contacter" float>
+      <group position={[-0.55, 0.79, -2.2]} rotation-y={0.35}>
+        <Box size={[0.09, 0.012, 0.18]} position={[0, 0.006, 0]} color={C.metal} rough={0.3} />
+        <mesh position={[0, 0.0125, 0]} rotation-x={-Math.PI / 2}>
+          <planeGeometry args={[0.078, 0.165]} />
+          <meshBasicMaterial color={lit ? C.gold : C.screen} toneMapped={false} />
+        </mesh>
+      </group>
+    </Hotspot>
   );
 }
 
-/** Lampe de bureau : pied, bras, abat-jour, ampoule et sa lumière chaude. */
+/** Lampe de bureau. Éteinte au départ ; elle s'allume à la première découverte. */
 export function Lamp() {
+  const { seen } = useExploration();
+  const on = seen.length > 0;
   return (
     <group position={[-0.92, 0.79, -2.62]}>
       <mesh position={[0, 0.015, 0]} castShadow>
@@ -106,122 +95,149 @@ export function Lamp() {
       </mesh>
       <mesh position={[0.09, 0.42, 0.08]}>
         <sphereGeometry args={[0.035, 12, 12]} />
-        <meshBasicMaterial color={C.lampLight} toneMapped={false} />
+        <meshBasicMaterial color={on ? C.lampLight : "#3a3a40"} toneMapped={false} />
       </mesh>
-      <pointLight position={[0.12, 0.4, 0.14]} color={C.lampLight} intensity={5} distance={5} decay={1.5} />
+      <pointLight position={[0.12, 0.4, 0.14]} color={C.lampLight} intensity={on ? 5 : 0} distance={5} decay={1.5} />
     </group>
   );
 }
 
-/** Étagères à droite du bureau. Un livre par formation, plus quelques livres de décor. */
+/** Une formation = un livre. Ouvert, il laisse sa place au livre 3D (OpenBook), qui sort de l'étagère. */
+function Book({ index, color }: { index: number; color: string }) {
+  const at = bookAt(index);
+  const { focus } = useExploration();
+  const open = focus?.kind === "books" && focus.index === index;
+  return (
+    <Hotspot focus={{ kind: "books", index }} at={at} radius={0.13} label="Livre · une formation">
+      <group visible={!open}>
+        <Box size={[0.075, bookHeight(index), 0.2]} position={at} color={color} />
+      </group>
+    </Hotspot>
+  );
+}
+
+/** Étagères contre le mur de droite du fond. Un livre par formation, plus des livres de décor et une plante. */
 export function Shelves({ books }: { books: number }) {
+  const { seen } = useExploration();
   const extras = 5;
   return (
-    <group position={[2.15, 0, -2.86]}>
+    <group>
       {[1.25, 1.8].map((y) => (
-        <Box key={y} size={[1.4, 0.04, 0.26]} position={[0, y, 0]} color={C.wood} rough={0.6} />
+        <Box key={y} size={[1.4, 0.04, 0.26]} position={[2.15, y, -2.86]} color={C.wood} rough={0.6} />
       ))}
-      {Array.from({ length: books }, (_, i) => {
-        const h = 0.3 + (i % 3) * 0.03;
-        return (
-          <Box
-            key={`f${i}`}
-            size={[0.075, h, 0.2]}
-            position={[-0.55 + i * 0.095, 1.82 + h / 2, 0]}
-            color={BOOK_COLORS[i % BOOK_COLORS.length]}
-          />
-        );
-      })}
+      {Array.from({ length: books }, (_, i) => (
+        <Book key={i} index={i} color={BOOK_COLORS[i % BOOK_COLORS.length]} />
+      ))}
       {Array.from({ length: extras }, (_, i) => {
         const h = 0.24 + (i % 2) * 0.05;
         return (
           <Box
             key={`d${i}`}
             size={[0.06, h, 0.19]}
-            position={[0.1 + i * 0.08, 1.27 + h / 2, 0]}
+            position={[2.25 + i * 0.08, 1.27 + h / 2, -2.86]}
             color={BOOK_COLORS[(i + 3) % BOOK_COLORS.length]}
           />
         );
       })}
-      {/* Plante en pot */}
-      <mesh position={[-0.45, 1.34, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.055, 0.14, 12]} />
-        <meshStandardMaterial color={C.paper} roughness={0.7} />
-      </mesh>
-      <mesh position={[-0.45, 1.52, 0]} castShadow>
-        <icosahedronGeometry args={[0.13, 0]} />
-        <meshStandardMaterial color={C.plant} roughness={0.9} flatShading />
-      </mesh>
-    </group>
-  );
-}
-
-/** Cadres accrochés : un par réalisation, répartis entre le mur du fond et le mur de gauche. */
-export function Frames({ count }: { count: number }) {
-  const spots: { position: Vec3; rotationY: number; size: [number, number] }[] = [
-    { position: [-1.75, 2.0, -2.98], rotationY: 0, size: [0.5, 0.65] },
-    { position: [-2.45, 1.75, -2.98], rotationY: 0, size: [0.4, 0.4] },
-    { position: [-2.98, 1.9, 0.75], rotationY: Math.PI / 2, size: [0.6, 0.45] },
-    { position: [-2.98, 1.8, 1.65], rotationY: Math.PI / 2, size: [0.45, 0.6] },
-    { position: [-2.98, 1.75, 2.4], rotationY: Math.PI / 2, size: [0.4, 0.4] },
-    { position: [1.0, 2.35, -2.98], rotationY: 0, size: [0.45, 0.35] },
-  ];
-  return (
-    <group>
-      {spots.slice(0, count).map((s, i) => (
-        <group key={i} position={s.position} rotation-y={s.rotationY}>
-          <mesh castShadow>
-            <boxGeometry args={[s.size[0] + 0.06, s.size[1] + 0.06, 0.04]} />
-            <meshStandardMaterial color={C.woodDark} roughness={0.7} />
+      {/* Plante : apparaît après trois découvertes. */}
+      {seen.length >= 3 && (
+        <group>
+          <mesh position={[1.7, 1.34, -2.86]} castShadow>
+            <cylinderGeometry args={[0.07, 0.055, 0.14, 12]} />
+            <meshStandardMaterial color={C.paper} roughness={0.7} />
           </mesh>
-          <mesh position={[0, 0, 0.021]}>
-            <planeGeometry args={s.size} />
-            <meshStandardMaterial color={i % 2 ? C.paper : C.gold} roughness={0.9} />
+          <mesh position={[1.7, 1.52, -2.86]} castShadow>
+            <icosahedronGeometry args={[0.13, 0]} />
+            <meshStandardMaterial color={C.plant} roughness={0.9} flatShading />
           </mesh>
         </group>
-      ))}
+      )}
     </group>
   );
 }
 
-/** Post-it collés au mur à gauche de l'écran : un par catégorie de compétences. */
-export function PostIts({ count }: { count: number }) {
+/** Un cadre par réalisation. */
+export function Frames({ count }: { count: number }) {
   return (
-    <group position={[-0.95, 1.5, -2.985]}>
-      {Array.from({ length: count }, (_, i) => (
-        <mesh
+    <>
+      {FRAMES.slice(0, count).map((s, i) => (
+        <Hotspot
           key={i}
-          position={[(i % 3) * 0.17, -Math.floor(i / 3) * 0.17, 0]}
-          rotation-z={((i * 37) % 11) / 60 - 0.09}
+          focus={{ kind: "frames", index: i }}
+          at={s.position}
+          radius={Math.max(...s.size) * 0.75}
+          label="Cadre · une réalisation"
         >
-          <planeGeometry args={[0.14, 0.14]} />
-          <meshStandardMaterial color={NOTE_COLORS[i % NOTE_COLORS.length]} roughness={1} />
-        </mesh>
+          <group position={s.position} rotation-y={s.rotationY}>
+            <mesh castShadow>
+              <boxGeometry args={[s.size[0] + 0.06, s.size[1] + 0.06, 0.04]} />
+              <meshStandardMaterial color={C.woodDark} roughness={0.7} />
+            </mesh>
+            <mesh position={[0, 0, 0.021]}>
+              <planeGeometry args={s.size} />
+              <meshStandardMaterial color={i % 2 ? C.paper : C.gold} roughness={0.9} />
+            </mesh>
+          </group>
+        </Hotspot>
       ))}
-    </group>
+    </>
   );
 }
 
-/** Horloge murale à l'heure réelle. */
+/** Post-it collés au mur, à gauche de l'écran : un par catégorie de compétences. Ouverts, ils se décollent et avancent. */
+export function PostIts({ count }: { count: number }) {
+  const { focus } = useExploration();
+  const animated = useMotion();
+  const group = useRef<THREE.Group>(null);
+  const open = focus?.kind === "postits";
+
+  useFrame(() => {
+    const g = group.current;
+    if (!g) return;
+    const k = animated ? 0.1 : 1;
+    g.position.z = THREE.MathUtils.lerp(g.position.z, open ? -2.985 + 0.22 : -2.985, k);
+    g.rotation.x = THREE.MathUtils.lerp(g.rotation.x, open ? -0.12 : 0, k);
+  });
+
+  return (
+    <Hotspot focus={{ kind: "postits" }} at={ANCHORS.postits.at} radius={ANCHORS.postits.radius} label="Post-it · mes compétences" float>
+      <group ref={group} position={[-0.95, 1.5, -2.985]}>
+        {Array.from({ length: count }, (_, i) => (
+          <mesh key={i} position={[(i % 3) * 0.17, -Math.floor(i / 3) * 0.17, 0]} rotation-z={((i * 37) % 11) / 60 - 0.09}>
+            <planeGeometry args={[0.14, 0.14]} />
+            <meshStandardMaterial color={NOTE_COLORS[i % NOTE_COLORS.length]} roughness={1} side={THREE.DoubleSide} />
+          </mesh>
+        ))}
+      </group>
+    </Hotspot>
+  );
+}
+
+/** Horloge murale à l'heure réelle. Au clic, la trotteuse s'emballe un instant. */
 export function Clock({ animated }: { animated: boolean }) {
   const hours = useRef<THREE.Group>(null);
   const minutes = useRef<THREE.Group>(null);
   const seconds = useRef<THREE.Group>(null);
+  const { focus } = useExploration();
+  const spin = useRef(0);
+  const set = useRef(false);
 
-  const setHands = () => {
-    const now = new Date();
-    const s = now.getSeconds() + now.getMilliseconds() / 1000;
-    const m = now.getMinutes() + s / 60;
-    const h = (now.getHours() % 12) + m / 60;
-    if (hours.current) hours.current.rotation.z = -(h / 12) * Math.PI * 2;
-    if (minutes.current) minutes.current.rotation.z = -(m / 60) * Math.PI * 2;
-    if (seconds.current) seconds.current.rotation.z = -(s / 60) * Math.PI * 2;
-  };
-  // Animations coupées : l'heure est posée une fois, à l'affichage.
-  useFrame(() => {
-    if (animated || (hours.current && hours.current.userData.set !== true)) {
-      setHands();
-      if (hours.current) hours.current.userData.set = true;
+  useFrame((_, delta) => {
+    if (!hours.current || !minutes.current || !seconds.current) return;
+    if (!set.current || animated) {
+      const now = new Date();
+      const s = now.getSeconds() + now.getMilliseconds() / 1000;
+      const m = now.getMinutes() + s / 60;
+      const h = (now.getHours() % 12) + m / 60;
+      hours.current.rotation.z = -(h / 12) * Math.PI * 2;
+      minutes.current.rotation.z = -(m / 60) * Math.PI * 2;
+      set.current = true;
+      // Trotteuse : suit l'heure réelle, sauf quand l'horloge est ouverte et que les animations sont actives.
+      if (!(animated && focus?.kind === "clock")) seconds.current.rotation.z = -(s / 60) * Math.PI * 2;
+    }
+    if (animated && focus?.kind === "clock") {
+      spin.current += delta * 14;
+      seconds.current.rotation.z = -spin.current;
     }
   });
 
@@ -232,25 +248,27 @@ export function Clock({ animated }: { animated: boolean }) {
     </mesh>
   );
   return (
-    <group position={[2.15, 2.5, -2.97]}>
-      <mesh rotation-x={Math.PI / 2}>
-        <cylinderGeometry args={[0.26, 0.26, 0.04, 32]} />
-        <meshStandardMaterial color={C.woodDark} roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 0, 0.021]}>
-        <circleGeometry args={[0.23, 32]} />
-        <meshStandardMaterial color={C.paper} roughness={0.9} />
-      </mesh>
-      {Array.from({ length: 12 }, (_, i) => (
-        <mesh key={i} position={[Math.sin((i / 12) * Math.PI * 2) * 0.2, Math.cos((i / 12) * Math.PI * 2) * 0.2, 0.025]}>
-          <circleGeometry args={[i % 3 === 0 ? 0.014 : 0.007, 8]} />
-          <meshStandardMaterial color={C.metal} />
+    <Hotspot focus={{ kind: "clock" }} at={ANCHORS.clock.at} radius={ANCHORS.clock.radius} label="Horloge · le futur">
+      <group position={[2.15, 2.5, -2.97]}>
+        <mesh rotation-x={Math.PI / 2}>
+          <cylinderGeometry args={[0.26, 0.26, 0.04, 32]} />
+          <meshStandardMaterial color={C.woodDark} roughness={0.6} />
         </mesh>
-      ))}
-      <group ref={hours} position={[0, 0, 0.03]}>{hand(0.11, 0.018, C.metal)}</group>
-      <group ref={minutes} position={[0, 0, 0.035]}>{hand(0.17, 0.012, C.metal)}</group>
-      <group ref={seconds} position={[0, 0, 0.04]}>{hand(0.19, 0.005, "#a8853f")}</group>
-    </group>
+        <mesh position={[0, 0, 0.021]}>
+          <circleGeometry args={[0.23, 32]} />
+          <meshStandardMaterial color={C.paper} roughness={0.9} />
+        </mesh>
+        {Array.from({ length: 12 }, (_, i) => (
+          <mesh key={i} position={[Math.sin((i / 12) * Math.PI * 2) * 0.2, Math.cos((i / 12) * Math.PI * 2) * 0.2, 0.025]}>
+            <circleGeometry args={[i % 3 === 0 ? 0.014 : 0.007, 8]} />
+            <meshStandardMaterial color={C.metal} />
+          </mesh>
+        ))}
+        <group ref={hours} position={[0, 0, 0.03]}>{hand(0.11, 0.018, C.metal)}</group>
+        <group ref={minutes} position={[0, 0, 0.035]}>{hand(0.17, 0.012, C.metal)}</group>
+        <group ref={seconds} position={[0, 0, 0.04]}>{hand(0.19, 0.005, "#a8853f")}</group>
+      </group>
+    </Hotspot>
   );
 }
 
