@@ -43,3 +43,7 @@ next-env.d.ts
 
 # sorties de test du navigateur
 .playwright-mcp
+
+# Phase 7 : réponses et fichiers bruts de Pierre, non publiés
+QUESTIONNAIRE.md
+contenus/

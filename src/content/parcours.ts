@@ -1,4 +1,37 @@
-import type { Formation, Realisation, SkillCategory } from "./types";
+import type { Certification, Experience, Formation, Realisation, SkillCategory } from "./types";
+
+// CONTENU TEMPORAIRE : expériences fictives. La première est le poste actuel (ou le dernier).
+export const experiences: Experience[] = [
+  {
+    role: "Développeuse full-stack",
+    company: "Studio Lumen",
+    place: "Annecy",
+    dates: "Depuis 2023",
+    current: true,
+    summary:
+      "Je conçois et maintiens les applications web du studio, de la base de données à l'interface, pour des clients du tourisme et de la culture.",
+    highlights: [
+      "Refonte d'une billetterie : temps de chargement divisé par trois",
+      "Mise en place des tests de bout en bout et du déploiement continu",
+      "Accompagnement de deux développeurs juniors",
+    ],
+  },
+  {
+    role: "Développeuse front-end",
+    company: "Agence Cairn",
+    place: "Lyon",
+    dates: "2021 – 2023",
+    summary: "Intégration de sites vitrines et d'interfaces sur mesure, avec une attention particulière à l'accessibilité.",
+    highlights: ["Une vingtaine de sites livrés", "Audit d'accessibilité de tous les projets de l'agence"],
+  },
+];
+
+// CONTENU TEMPORAIRE : certifications fictives (organismes inventés).
+export const certifications: Certification[] = [
+  { name: "Accessibilité numérique avancée", issuer: "Institut Accès Numérique", date: "2025" },
+  { name: "Qualité et performance web", issuer: "Collectif Qualité Web", date: "2024" },
+  { name: "Graphismes 3D temps réel", issuer: "École des Arts numériques de Brévant", date: "2023" },
+];
 
 // CONTENU TEMPORAIRE : formations fictives, de la plus récente à la plus ancienne.
 export const formations: Formation[] = [

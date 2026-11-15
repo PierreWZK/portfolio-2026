@@ -1,5 +1,8 @@
 import { Footer } from "@/components/classic/Footer";
 import { Header } from "@/components/classic/Header";
+import { PageWipe } from "@/components/classic/PageWipe";
+import { ScrollFx } from "@/components/classic/ScrollFx";
+import { ScrollMeter } from "@/components/classic/ScrollMeter";
 import { profile } from "@/content";
 
 // Mise en page commune aux sept vues du mode classique.
@@ -11,6 +14,10 @@ export default function ClassicLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <Footer />
+      {/* Effets ASCII : rideau entre les vues, apparitions au défilement, jauge de lecture. */}
+      <PageWipe />
+      <ScrollFx />
+      <ScrollMeter />
     </>
   );
 }

@@ -6,10 +6,11 @@ import { useSyncExternalStore } from "react";
 export const KINDS = ["computer", "books", "frames", "postits", "phone", "clock"] as const;
 export type Kind = (typeof KINDS)[number];
 export type Focus = { kind: Kind; index?: number } | null;
-export type ExplorationState = { focus: Focus; seen: Kind[]; bookPage: number; hint: string | null };
+/** project : projet affiché sur l'écran de l'ordinateur (index dans `projects`). */
+export type ExplorationState = { focus: Focus; seen: Kind[]; bookPage: number; project: number; hint: string | null };
 
 const KEY = "exploration-seen";
-const SERVER: ExplorationState = { focus: null, seen: [], bookPage: 0, hint: null };
+const SERVER: ExplorationState = { focus: null, seen: [], bookPage: 0, project: 0, hint: null };
 
 let state: ExplorationState = SERVER;
 let loaded = false;
@@ -29,7 +30,7 @@ function readSeen(): Kind[] {
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  state = { focus: null, seen: readSeen(), bookPage: 0, hint: null };
+  state = { ...SERVER, seen: readSeen() };
 }
 
 function emit(next: ExplorationState) {
@@ -54,7 +55,13 @@ export function setFocus(focus: Focus) {
       // Sans stockage : la découverte compte pour cette page seulement.
     }
   }
-  emit({ focus, seen, bookPage: 0, hint: null });
+  emit({ focus, seen, bookPage: 0, project: 0, hint: null });
+}
+
+/** Projet affiché sur l'écran de l'ordinateur. */
+export function setProject(project: number) {
+  ensureLoaded();
+  emit({ ...state, project });
 }
 
 /** Le livre a deux doubles pages : 0 (titre) et 1 (description et compétences). */
