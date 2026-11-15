@@ -4,3 +4,4 @@ export { profile, contact } from "./profile";
 export { projects } from "./projects";
 export { formations, realisations, skillCategories } from "./parcours";
 export { future } from "./future";
+export { deskBooks } from "./desk";

@@ -348,8 +348,21 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
     - Lint : les règles React de cette version interdisent de modifier un objet rendu par un hook ; caméra et contrôles sont lus avec `get()` au moment d'agir.
     - Mobile : en-tête qui recouvrait « Retour au bureau », barre d'objets sur trois lignes, livre trop petit puis trop grand.
 
+- 2026-11-15, **retouche demandée par Pierre** : « quelque chose de Low Poly, avec de beaux graphismes », et plus d'objets sur le bureau, dont des livres titrés qu'il modifiera (exemples donnés : Stratégie de Design UX, Clean Code).
+  - `scene/lowpoly.tsx` : briques du style (`Mat` matériau à facettes, `Box`, `Prism` cylindre à peu de côtés, `Gem` icosaèdre). Tout est éclairé à plat (`flatShading`).
+  - Palette refaite (`palette.ts`) : murs bleu-vert sourd à soubassement sombre, bois chauds, tapis crème bordé de brique, touches de gold.
+  - Pièce (`Room.tsx`) : parquet en huit lames de deux tons, tapis à dix côtés, soubassement et cimaise, appui de fenêtre, tringle et rideaux à plis, grande plante en pot au sol.
+  - Meubles (`Furniture.tsx`) : bureau à pieds fuselés avec caisson à deux tiroirs et poignées gold, sous-main, clavier à rangées, lampe d'architecte articulée, étagères à équerres, serre-livres, livres à filet doré, cadres avec petits paysages low poly, horloge à douze pans, chaise à piètement en étoile et accoudoirs.
+  - Personnage (`Character.tsx`) : buste en tronc de prisme, membres à cinq ou six pans, tête et cheveux à facettes. Mêmes animations.
+  - **Objets du bureau** (`DeskItems.tsx`, décor non cliquable) : pile de livres avec titre et auteur sur le dos, tasse de café, pot à crayons, carnet ouvert.
+  - **Livres du bureau modifiables** dans `src/content/desk.ts` (`deskBooks`, cinq au plus) : titre et auteur. Actuels : Stratégie de design UX, Clean Code, Refactoring UI, Don't Make Me Think.
+  - Éclairage : moins d'ambiance, clair de lune plus fort (ombres 2048), appoint chaud, lueur de l'écran. La lampe s'allume toujours à la première découverte.
+  - Mesuré : 61 images/s en 1280×800 et 375×700, 310 appels de dessin, 11 324 triangles (contre 150 et 8 884 avant). `npm test` (19), lint, build passent. Aucune erreur console. Les six interactions et le lever du jour à 6/6 revérifiés.
+  - Non testé : vrai téléphone, où 310 appels de dessin pèseront plus.
+  - Raté : une grosse commande shell d'écriture a échoué sur une erreur de guillemets, sans rien écrire. Fichiers réécrits un par un.
+
 ## 7. En attente
-- **Validation par Pierre de la phase 5 (interactions)**, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
+- **Validation par Pierre de la phase 5 (interactions) et du rendu low poly**, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
 - Étape 8 faite sauf la branche `master` et la PR.
 - **À faire par Pierre** : créer `master` sur GitHub (interface web : menu des branches, saisir `master`, « Create branch from feat/mode-classique », puis Settings → Default branch), ou autoriser cette action. Ensuite Claude ouvre la PR ou repasse Coolify sur `master`.
 - **Décisions de Pierre** : publier ou non la photo (commit + push + déploiement) ; améliorer ou non le rendu du portrait (plus de colonnes, fond atténué).

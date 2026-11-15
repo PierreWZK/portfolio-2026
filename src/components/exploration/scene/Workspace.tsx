@@ -17,6 +17,7 @@ import {
   PostIts,
   Shelves,
 } from "../objects/Furniture";
+import { DeskItems } from "../objects/DeskItems";
 import { OpenBook } from "../objects/OpenBook";
 import { CameraRig } from "./CameraRig";
 import { ComputerScreen } from "./ComputerScreen";
@@ -69,15 +70,17 @@ export default function Workspace() {
           aria-label="Bureau en 3D : un personnage assis devant son ordinateur, une fenêtre sur la nuit, des étagères de livres, des cadres, des post-it, une lampe, une horloge et un téléphone. Chaque objet s'ouvre aussi depuis la barre de boutons sous la scène."
           role="img"
         >
-          <ambientLight intensity={1.1} />
-          <hemisphereLight args={[C.moonLight, C.floor, 0.9]} />
+          {/* Peu de lumière d'ambiance : en low poly, ce sont les contrastes qui dessinent les facettes. */}
+          <ambientLight intensity={0.55} />
+          <hemisphereLight args={[C.moonLight, C.floorB, 0.75]} />
           {/* Clair de lune qui entre par la fenêtre : la seule lumière qui porte des ombres. */}
           <directionalLight
             position={[-6, 4.5, 0.5]}
-            intensity={0.9}
+            intensity={1.5}
             color={C.moonLight}
             castShadow
-            shadow-mapSize={[1024, 1024]}
+            shadow-mapSize={[2048, 2048]}
+            shadow-radius={3}
             shadow-camera-left={-4}
             shadow-camera-right={4}
             shadow-camera-top={4}
@@ -85,13 +88,10 @@ export default function Workspace() {
             shadow-camera-far={16}
             shadow-bias={-0.0006}
           />
-          <pointLight
-            position={[1.5, 2.6, 0.5]}
-            intensity={14}
-            distance={10}
-            decay={1.4}
-            color="#ffe6c4"
-          />
+          {/* Appoint chaud venu de la pièce, sans ombre : il débouche les faces tournées vers la caméra. */}
+          <pointLight position={[2.4, 2.8, 1.2]} intensity={16} distance={11} decay={1.4} color="#ffdcb0" />
+          {/* Lueur de l'écran sur le personnage et le bureau. */}
+          <pointLight position={[0, 1.3, -2.25]} intensity={1.6} distance={2.2} decay={1.6} color={C.screenGlow} />
 
           {/* Tout découvert : le jour se lève derrière la fenêtre. */}
           <Room dawn={seen.length >= KINDS.length} />
@@ -99,6 +99,7 @@ export default function Workspace() {
           <Computer />
           <ComputerScreen />
           <Phone />
+          <DeskItems />
           <Lamp />
           <Chair />
           <Character animated={animated} />

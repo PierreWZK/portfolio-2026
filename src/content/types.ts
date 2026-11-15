@@ -71,3 +71,9 @@ export type Contact = {
   email: string;
   links: { label: string; url: string }[];
 };
+
+/** Livre posé sur le bureau 3D : décor personnalisable (lectures du moment). */
+export type DeskBook = {
+  title: string;
+  author?: string;
+};
