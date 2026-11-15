@@ -27,6 +27,28 @@ export type Project = {
   features: string[];
   url?: string;
   github?: string;
+  /** Projet phare, mis en avant sur l'accueil du mode classique. Un seul projet. */
+  featured?: boolean;
+};
+
+/** Expérience professionnelle. La première de la liste est le poste actuel ou le dernier poste. */
+export type Experience = {
+  role: string;
+  company: string;
+  place?: string;
+  /** Affiché tel quel, par exemple « Depuis 2023 » ou « 2021 – 2023 ». */
+  dates: string;
+  /** Vrai si c'est le poste occupé aujourd'hui. */
+  current?: boolean;
+  summary: string;
+  highlights: string[];
+};
+
+export type Certification = {
+  name: string;
+  issuer: string;
+  date: string;
+  url?: string;
 };
 
 export type Formation = {

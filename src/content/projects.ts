@@ -18,6 +18,7 @@ export const projects: Project[] = [
     ],
     url: "https://atlas.example",
     github: "https://github.com/example/atlas-des-sentiers",
+    featured: true,
   },
   {
     slug: "papier-carbone",
