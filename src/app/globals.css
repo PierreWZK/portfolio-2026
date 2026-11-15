@@ -261,6 +261,25 @@
     }
   }
 
+  /* --- Apparitions au défilement (ScrollFx). Un bloc se trace de haut en bas par à-coups,
+     comme un terminal qui imprime ligne à ligne. fill backwards : aucun clip-path ne reste
+     après l'animation (il couperait le contour de focus). --- */
+  .fx-wait {
+    opacity: 0;
+  }
+  .fx-in {
+    animation: fx-raster 440ms steps(9, end) backwards;
+    animation-delay: var(--fx-delay, 0ms);
+  }
+  @keyframes fx-raster {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
   /* --- Portrait ASCII, sans cadre. La police suit la largeur du bloc :
      --cols colonnes x 0,6 em de chasse. Les proportions viennent de l'image (posées en JS). --- */
   .portrait {

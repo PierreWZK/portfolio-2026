@@ -50,7 +50,8 @@ function Section({
           </Link>
         )}
       </div>
-      {children}
+      {/* data-reveal : le contenu se trace ligne à ligne en entrant à l'écran (ScrollFx). */}
+      <div data-reveal>{children}</div>
     </section>
   );
 }
