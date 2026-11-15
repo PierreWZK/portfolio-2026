@@ -20,7 +20,6 @@ import {
 import { DeskItems } from "../objects/DeskItems";
 import { OpenBook } from "../objects/OpenBook";
 import { CameraRig } from "./CameraRig";
-import { ComputerScreen } from "./ComputerScreen";
 import { HOME_TARGET, htmlLayer, type Vec3 } from "./layout";
 import { C } from "./palette";
 import { Room } from "./Room";
@@ -99,7 +98,6 @@ export default function Workspace() {
           <Room dawn={seen.length >= KINDS.length} />
           <Desk />
           <Computer />
-          <ComputerScreen />
           <Phone />
           <DeskItems />
           <Lamp />

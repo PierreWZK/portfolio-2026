@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 import { contact, formations, future, profile, projects, realisations, skillCategories } from "@/content";
-import { BOOK_PAGES, KINDS, setBookPage, setFocus, useExploration, type Focus, type Kind } from "./scene/store";
+import { BOOK_PAGES, KINDS, setBookPage, setFocus, setProject, useExploration, type Focus, type Kind } from "./scene/store";
 
 // Interface posée par-dessus la scène 3D : barre des objets (accès clavier et tactile à tout),
 // bouton de retour, et panneau de contenu de l'objet ouvert.
@@ -53,22 +53,44 @@ function Panel({ kind, title, children, className = "" }: { kind: Kind; title: s
   );
 }
 
-function FocusPanel({ focus, bookPage }: { focus: NonNullable<Focus>; bookPage: number }) {
+function FocusPanel({ focus, bookPage, project }: { focus: NonNullable<Focus>; bookPage: number; project: number }) {
   const index = focus.index ?? 0;
   switch (focus.kind) {
     case "computer":
-      // Sur grand écran, les projets se lisent dans l'écran 3D. Ce panneau n'existe que sur petit écran,
-      // où l'écran 3D serait trop petit pour être lu.
+      // L'écran 3D affiche le projet choisi ici. Le panneau porte les commandes et le texte complet.
       return (
-        <Panel kind="computer" title="Mes projets" className="sm:hidden">
+        <Panel kind="computer" title="Mes projets" className="sm:w-[20rem]">
           <ul className="space-y-4">
-            {projects.map((p) => (
+            {projects.map((p, i) => (
               <li key={p.slug}>
-                <Link href={`/projets/${p.slug}`} className="font-bold underline underline-offset-4 hover:text-gold">
+                <button
+                  type="button"
+                  aria-pressed={i === project}
+                  onClick={() => setProject(i)}
+                  className={`text-left font-bold hover:text-gold ${i === project ? "text-gold" : ""}`}
+                >
+                  <span aria-hidden="true">{i === project ? "■ " : "□ "}</span>
                   {p.title}
-                </Link>
+                  <span className="sr-only"> : afficher sur l&apos;écran</span>
+                </button>
                 <p className="mt-1 text-sm text-muted">{p.summary}</p>
-                <p className="mt-1 font-mono text-xs text-muted">{p.stack.join(" · ")}</p>
+                {i === project && (
+                  <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs">
+                    <Link href={`/projets/${p.slug}`} className="underline underline-offset-4 hover:text-gold">
+                      Fiche complète
+                    </Link>
+                    {p.url && (
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-gold">
+                        Voir le projet<span className="sr-only"> (nouvel onglet)</span>
+                      </a>
+                    )}
+                    {p.github && (
+                      <a href={p.github} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-gold">
+                        GitHub<span className="sr-only"> (nouvel onglet)</span>
+                      </a>
+                    )}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
@@ -186,7 +208,7 @@ function FocusPanel({ focus, bookPage }: { focus: NonNullable<Focus>; bookPage: 
 }
 
 export function ExplorationUI() {
-  const { focus, seen, bookPage, hint } = useExploration();
+  const { focus, seen, bookPage, project, hint } = useExploration();
   const tip = useRef<HTMLParagraphElement>(null);
   const back = useRef<HTMLButtonElement>(null);
   const bar = useRef<HTMLElement>(null);
@@ -241,7 +263,7 @@ export function ExplorationUI() {
           >
             ← Retour au bureau
           </button>
-          <FocusPanel focus={focus} bookPage={bookPage} />
+          <FocusPanel focus={focus} bookPage={bookPage} project={project} />
         </>
       )}
 

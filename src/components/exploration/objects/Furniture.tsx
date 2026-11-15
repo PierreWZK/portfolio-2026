@@ -6,7 +6,9 @@ import { Hotspot } from "../scene/Hotspot";
 import { ANCHORS, FRAMES, bookAt, bookHeight } from "../scene/layout";
 import { Box, Gem, Mat, Prism } from "../scene/lowpoly";
 import { BOOK_COLORS, C, NOTE_COLORS } from "../scene/palette";
-import { useExploration } from "../scene/store";
+import { projects } from "@/content";
+import { ComputerScreen } from "../scene/ComputerScreen";
+import { setProject, useExploration } from "../scene/store";
 
 // Meubles et objets de la pièce, en low poly : formes à peu de faces, éclairées à plat.
 // Les objets cliquables sont enveloppés dans <Hotspot> ; la pièce évolue avec les découvertes.
@@ -58,23 +60,22 @@ export function Desk() {
   );
 }
 
-/** Ordinateur : écran (l'interface est posée par ComputerScreen), pied, clavier à rangées, souris. */
+/** Ordinateur : écran (dessiné par ComputerScreen), pied, clavier à rangées, souris. */
 export function Computer() {
+  const { project } = useExploration();
   return (
     <Hotspot
       focus={{ kind: "computer" }}
       at={ANCHORS.computer.at}
       radius={ANCHORS.computer.radius}
       label="Ordinateur · mes projets"
+      onActiveClick={() => setProject((project + 1) % projects.length)}
     >
       <group position={[0, 0.79, -2.6]}>
         <Prism top={0.11} bottom={0.15} height={0.025} sides={6} position={[0, 0.012, 0]} color={C.metal} rough={0.4} />
         <Box size={[0.06, 0.22, 0.04]} position={[0, 0.12, -0.02]} rotation={[0.12, 0, 0]} color={C.metal} rough={0.4} />
         <Box size={[1.0, 0.62, 0.04]} position={[0, 0.5, 0]} color={C.metal} rough={0.4} />
-        <mesh position={[0, 0.5, 0.022]}>
-          <planeGeometry args={[0.94, 0.56]} />
-          <meshBasicMaterial color={C.screen} />
-        </mesh>
+        <ComputerScreen position={[0, 0.5, 0.022]} />
         {/* Clavier : socle et trois rangées de touches */}
         <Box size={[0.5, 0.018, 0.17]} position={[0, 0.013, 0.4]} color={C.metal} rough={0.5} />
         {[-0.05, 0, 0.05].map((z) => (

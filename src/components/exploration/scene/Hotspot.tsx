@@ -16,6 +16,7 @@ export function Hotspot({
   focus,
   label,
   float = false,
+  onActiveClick,
   children,
 }: {
   at: Vec3;
@@ -23,6 +24,8 @@ export function Hotspot({
   focus: Focus;
   label?: string;
   float?: boolean;
+  /** Clic sur l'objet déjà ouvert (ex. projet suivant sur l'ordinateur). Sans lui, le clic ne change rien. */
+  onActiveClick?: () => void;
   children: ReactNode;
 }) {
   const group = useRef<THREE.Group>(null);
@@ -81,7 +84,8 @@ export function Hotspot({
         onClick={(event) => {
           event.stopPropagation();
           document.body.style.cursor = "";
-          setFocus(focus);
+          if (!active) setFocus(focus);
+          else onActiveClick?.();
         }}
       >
         <sphereGeometry args={[radius, 12, 8]} />

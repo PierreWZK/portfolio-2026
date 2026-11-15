@@ -53,7 +53,8 @@ export function viewFor(focus: Focus): View | null {
   switch (focus.kind) {
     case "computer":
       // Par-dessus l'épaule droite du personnage : sa tête ne masque pas l'écran.
-      return { pos: [1.05, 1.75, -1.2], target: [0, 1.28, -2.6] };
+      // Visée décalée à droite : l'écran se place à gauche, le panneau des projets à droite.
+      return { pos: [1.4, 1.75, -1.2], target: [0.35, 1.28, -2.6] };
     case "phone":
       return { pos: [-0.55, 1.75, -1.45], target: [-0.55, 0.84, -2.2] };
     case "postits":
