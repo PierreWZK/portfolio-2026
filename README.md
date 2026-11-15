@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio · ASCII World & Welcome to my workspace
 
-## Getting Started
+> Jour 30 du défi **30 jours, 30 projets** · Next.js · TypeScript · Tailwind CSS · Three.js
 
-First, run the development server:
+Un portfolio personnel à deux modes, qui partagent les mêmes données :
+
+- **Mode classique** : sept rubriques (About me, Projets, Formations, Réalisations, Compétences, Le futur, Contact), esthétique ASCII, thème clair / sombre, portrait converti en caractères.
+- **Mode exploration** « Welcome to my workspace » : un bureau 3D low poly, écrit en code (Three.js, React Three Fiber). Six objets s'ouvrent : ordinateur (projets), livres (formations, avec un livre 3D qui s'ouvre), cadres (réalisations), post-it (compétences), téléphone (contact), horloge (le futur). La pièce évolue avec les découvertes. Tout s'ouvre aussi au clavier, et un repli s'affiche sans WebGL.
+
+Le contenu actuel est **fictif** (personne inventée) en attendant les vraies informations. Le site n'est donc pas indexé (`robots.ts`).
+
+Site : https://portfolio.projectp.fr · Dépôt : https://github.com/PierreWZK/portfolio-2026
+
+## Lancer en local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Vérifier
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm test           # Vitest : paysage ASCII, conversion image vers ASCII, validation du contact
+npm run lint
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Modifier le contenu
 
-## Learn More
+Tout le contenu est dans `src/content/` (profil, projets, formations, réalisations, compétences, vision du futur, contact). Aucun texte de contenu n'est écrit dans les composants.
 
-To learn more about Next.js, take a look at the following resources:
+- Portrait : déposer la photo dans `public/`, puis mettre `src: "/portrait.jpg"` dans `src/content/profile.ts`.
+- Capture d'un projet : renseigner le champ `image` du projet.
+- Livres posés sur le bureau 3D : `src/content/desk.ts` (titre et auteur, cinq au plus).
+- Photo détourée : `node scripts/cutout.mjs photo.png public/portrait-cutout.png` (fond clair ou ciel), ou déposer un PNG à fond transparent.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Formulaire de contact
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+L'envoi passe par SMTP. Copier `.env.example` vers `.env.local` et remplir `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`. Sans ces variables, le formulaire n'envoie rien et propose un lien `mailto:`.
 
-## Deploy on Vercel
+## Mise en ligne
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`Dockerfile` pour Coolify, port 3000. Variables SMTP à poser à l'exécution.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Stack
+
+Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · Three.js · React Three Fiber · Vitest · nodemailer.
+
+Suivi détaillé du projet : [CLAUDE_CONTEXTE.md](CLAUDE_CONTEXTE.md).
