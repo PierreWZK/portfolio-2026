@@ -36,6 +36,8 @@ export default function Workspace() {
   // Écran en hauteur (téléphone) : la caméra recule pour garder le sujet entier dans le cadre.
   const [portrait] = useState(() => window.innerHeight > window.innerWidth);
   const back = portrait ? 1.7 : 1;
+  // Téléphone ou tablette (pointeur grossier) : moins de pixels et des ombres plus légères.
+  const [light] = useState(() => window.matchMedia("(pointer: coarse)").matches);
   const [home] = useState<Vec3>(() => [
     HOME_TARGET[0] + 4.4 * back,
     HOME_TARGET[1] + 1.95 * back,
@@ -57,7 +59,7 @@ export default function Workspace() {
       {layer && (
         <Canvas
           shadows
-          dpr={[1, 1.75]}
+          dpr={light ? [1, 1.5] : [1, 1.75]}
           frameloop={animated ? "always" : "demand"}
           camera={{ position: home, fov: 40, near: 0.1, far: 60 }}
           gl={{ antialias: true, powerPreference: "high-performance" }}
@@ -79,7 +81,7 @@ export default function Workspace() {
             intensity={1.5}
             color={C.moonLight}
             castShadow
-            shadow-mapSize={[2048, 2048]}
+            shadow-mapSize={light ? [1024, 1024] : [2048, 2048]}
             shadow-radius={3}
             shadow-camera-left={-4}
             shadow-camera-right={4}

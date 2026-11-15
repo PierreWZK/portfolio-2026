@@ -361,8 +361,19 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
   - Non testé : vrai téléphone, où 310 appels de dessin pèseront plus.
   - Raté : une grosse commande shell d'écriture a échoué sur une erreur de guillemets, sans rien écrire. Fichiers réécrits un par un.
 
+- 2026-11-15, **phase 6 : finitions**, lancée par « Tu peux continuer » (phase 5 et rendu low poly validés).
+  - Audit accessibilité (axe-core, WCAG 2 A/AA, 2.1 AA, bonnes pratiques) : `/about`, `/projets`, `/contact`, `/futur` et `/exploration` dans ses 7 états (vue d'ensemble + six objets ouverts), en 2 thèmes et 2 largeurs, soit 56 états. **Un seul défaut** : les panneaux défilants (compétences sur mobile, Le futur) n'étaient pas focalisables, donc impossibles à faire défiler au clavier. Corrigé (`tabIndex={0}`), puis audit relancé : aucun défaut. axe-core retiré ensuite (jamais ajouté à `package.json`).
+  - Consigne de manipulation remise sous la scène (« Glisser pour tourner… »), affichée tant qu'aucun objet n'est ouvert. Elle avait disparu lors de la phase 5.
+  - Scène allégée sur appareil tactile (`pointer: coarse`) : densité de pixels plafonnée à 1,5 et ombres en 1024 au lieu de 2048.
+  - Vérifié : passages accueil → exploration → classique → accueil ; thème clair sur l'exploration ; panneau défilable au clavier ; repli sans WebGL (ni canvas ni barre d'objets, message et bouton vers le mode classique) ; mobile 375 px sans débordement. `npm test` (19), lint, build. Aucune erreur console.
+  - `README.md` mis à jour (mode exploration, livres du bureau, script de détourage).
+  - **Toujours non testé, et impossible à tester d'ici** : vrai téléphone (toucher, pincement, performances réelles avec 310 appels de dessin), Safari, Firefox, lecteur d'écran réel.
+  - Défaut connu, non corrigé : adresse de projet inconnue = page 404 servie avec un code HTTP 200. À traiter avant d'ouvrir l'indexation.
+
 ## 7. En attente
-- **Validation par Pierre de la phase 5 (interactions) et du rendu low poly**, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
+- Phases 1 à 6 faites. Reste la **phase 7 : vraies informations de Pierre**, puis indexation (sitemap, canonical, JSON-LD, aperçu de lien, correction du code 404).
+- Pousser sur GitHub et redéployer quand Pierre le dira (il a dit « on poussera ensuite »). La branche `master` reste à créer par Pierre.
+- Ancienne ligne, pour mémoire : validation par Pierre de la phase 5 (interactions) et du rendu low poly, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
 - Étape 8 faite sauf la branche `master` et la PR.
 - **À faire par Pierre** : créer `master` sur GitHub (interface web : menu des branches, saisir `master`, « Create branch from feat/mode-classique », puis Settings → Default branch), ou autoriser cette action. Ensuite Claude ouvre la PR ou repasse Coolify sur `master`.
 - **Décisions de Pierre** : publier ou non la photo (commit + push + déploiement) ; améliorer ou non le rendu du portrait (plus de colonnes, fond atténué).

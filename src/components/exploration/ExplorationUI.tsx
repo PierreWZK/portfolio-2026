@@ -42,6 +42,8 @@ function Panel({ kind, title, children, className = "" }: { kind: Kind; title: s
   return (
     <section
       aria-label={`${LABELS[kind].name} : ${title}`}
+      // Zone défilante : focalisable, pour défiler au clavier.
+      tabIndex={0}
       className={`pointer-events-auto absolute inset-x-3 bottom-24 max-h-[42dvh] overflow-y-auto border border-line bg-bg p-5 sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-24 sm:max-h-[calc(100dvh-13rem)] sm:w-[24rem] ${className}`}
     >
       <p className="font-mono text-xs uppercase tracking-widest text-gold">{LABELS[kind].name}</p>
@@ -241,6 +243,12 @@ export function ExplorationUI() {
           </button>
           <FocusPanel focus={focus} bookPage={bookPage} />
         </>
+      )}
+
+      {!focus && (
+        <p className="pointer-events-none absolute inset-x-0 bottom-20 mx-auto w-fit max-w-[calc(100%-1.5rem)] bg-bg/80 px-3 py-1 text-center font-mono text-xs text-muted">
+          Glisser pour tourner, molette ou pincement pour zoomer. Cliquer un objet, ou le choisir ci-dessous.
+        </p>
       )}
 
       <nav
