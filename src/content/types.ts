@@ -2,6 +2,8 @@
 
 export type Profile = {
   name: string;
+  /** Marque courte, dans l'en-tête et le pied de page (ex. « Pierr. »). */
+  brand: string;
   role: string;
   tagline: string;
   /** Situation actuelle, affichée en petit dans le hero (ex. recherche de poste). Optionnel. */

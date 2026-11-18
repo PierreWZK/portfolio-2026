@@ -35,7 +35,8 @@ export async function POST(request: Request) {
     });
     await transport.sendMail({
       from: SMTP_USER,
-      to: CONTACT_TO ?? contact.email,
+      // Une variable vide compte comme absente : on retombe sur l'adresse publique.
+      to: CONTACT_TO || contact.email,
       replyTo: `${name} <${email}>`,
       subject: `[Portfolio] Message de ${name}`,
       text: `${message}\n\n— ${name} <${email}>`,

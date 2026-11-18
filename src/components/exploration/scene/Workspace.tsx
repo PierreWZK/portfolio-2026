@@ -6,6 +6,7 @@ import { useState } from "react";
 import { formations, realisations, skillCategories } from "@/content";
 import { useMotion } from "@/lib/motion";
 import { Character } from "../objects/Character";
+import { Companions } from "../objects/Companions";
 import {
   Chair,
   Clock,
@@ -68,7 +69,7 @@ export default function Workspace() {
             if (process.env.NODE_ENV !== "production")
               Object.assign(window, { __gl: gl, __cam: camera });
           }}
-          aria-label="Bureau en 3D : un personnage assis devant son ordinateur, une fenêtre sur la nuit, des étagères de livres, des cadres, des post-it, une lampe, une horloge et un téléphone. Chaque objet s'ouvre aussi depuis la barre de boutons sous la scène."
+          aria-label="Bureau en 3D : un personnage assis devant son ordinateur, une fenêtre sur la nuit, des étagères de livres, des cadres, des post-it, une lampe, une horloge, un téléphone, un Rubik's cube, des plantes, et un chien couché sur le tapis. Chaque objet s'ouvre aussi depuis la barre de boutons sous la scène."
           role="img"
         >
           {/* Peu de lumière d'ambiance : en low poly, ce sont les contrastes qui dessinent les facettes. */}
@@ -100,6 +101,7 @@ export default function Workspace() {
           <Computer />
           <Phone />
           <DeskItems />
+          <Companions animated={animated} />
           <Lamp />
           <Chair />
           <Character animated={animated} />

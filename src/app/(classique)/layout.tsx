@@ -9,7 +9,7 @@ import { profile } from "@/content";
 export default function ClassicLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-      <Header brand={profile.name} />
+      <Header brand={profile.brand} />
       <main id="contenu" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 outline-none sm:px-8 sm:py-16">
         {children}
       </main>

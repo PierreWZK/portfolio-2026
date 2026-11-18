@@ -390,6 +390,24 @@ Ensuite : scène 3D (phase 4), interactions (phase 5), finitions (phase 6), vrai
   - `ScrollMeter.tsx` : jauge de lecture `[####········] 24 %` en bas à droite, décorative, masquée sur mobile et sur les pages courtes.
   - Animations coupées : aucun rideau, rien de caché. Testé (Playwright) : sens avant/arrière, décodage, tracé, saut en bas de page (0 bloc resté caché), animations coupées, mobile 375 px sans débordement, axe 0 défaut après défilement complet, aucune erreur console. `tsc`, lint, 19 tests et build passent.
   - Non jugé d'ici : le ressenti en vrai (durée, scintillement). À regarder par Pierre.
+- 2026-11-15 : PR #1 fusionnée par Pierre ; PR #2 ouverte (https://github.com/PierreWZK/portfolio-2026/pull/2) avec les trois commits suivants.
+- 2026-11-18, **phase 7 : vraies informations intégrées**. Les réponses de Pierre sont dans `contenus/QUESTIONNAIRE.md` (le fichier à la racine est resté vierge), avec son CV `contenus/DOLIVET_PIERRE_CV_2026.pdf` et `contenus/journal.md`. Réécriture par catégorie dans `contenus/REDACTION.md`, puis 10 points tranchés par Pierre :
+  1. Projet phare : À Table Capucine (« projet concret »), affiché en premier.
+  2. Certifications : ne pas les supprimer du code, juste ne pas les afficher (`showCertifications = false`, exemples fictifs gardés comme modèle).
+  3. Biographies : Walter Isaacson (Steve Jobs), Gaël Angleviel (Lewis Hamilton).
+  4. Objets du bureau : les trois (Rubik's cube, plante, chien).
+  5. Liens : GitHub PierreWZK, LinkedIn pierre-dolivet, Instagram pierredodo35.
+  6. Diplômes obtenus, études finies.
+  7. Journal du défi déposé.
+  8. Titre : celui du CV, « Développeur full-stack & UX designer junior ».
+  9. Afficher pierredolivet.pro@gmail.com, recevoir le formulaire sur cette adresse et sur pierredolivet@live.fr.
+  10. À Table Capucine : projet de stage, déjà en ligne (www.atablecapucine.fr).
+  - Fait : profil (nom, marque « Pierr. » dans l'en-tête et le pied de page, titre, statut, lieu, présentation au tutoiement, ton sobre avec une pointe d'humour), contact, 4 expériences, 3 formations, 2 réalisations (défi 30 jours, Hackathon Sopra Steria), compétences, page Le futur, 5 livres du bureau, 4 projets avec captures en webp (`public/projets/` : capture du site pour À Table Capucine, aperçus des README pour Bolduc, Drop, LayR). Mention « Contenu fictif temporaire » retirée du pied de page. Nouveau `objects/Companions.tsx` : Rubik's cube, plante grasse sur le bureau, chien couché sur le tapis (respire, remue la queue, lève la tête).
+  - Destinataires : `CONTACT_TO` accepte plusieurs adresses séparées par des virgules ; `.env.local` (non versionné) contient les deux. L'adresse live.fr n'est pas dans le dépôt. Correctif : `CONTACT_TO` vide retombe sur l'adresse publique (`||` au lieu de `??`).
+  - Indexation toujours coupée (Pierre : « après relecture finale »).
+  - Choix faits par Claude, à signaler : poste actuel daté « Depuis septembre 2025 » (réponse 27) alors que le CV dit 2026 ; Icicartegrise situé à Brest (ancien portfolio) ; stack d'À Table Capucine limitée à WordPress, CSS, Figma (le CV dit Elementor, l'ancien portfolio Divi) ; date du hackathon « Deux éditions », années inconnues.
+  - Testé (Playwright) : 9 pages en 200, axe 0 défaut sur chacune après défilement complet, aucun reste de « Camille », « Aubrac », « fictif » ou « example » dans le texte affiché, aucune erreur console, scène 3D avec les nouveaux objets. `tsc`, lint, 19 tests et build passent.
+  - Reste : identifiants SMTP OVH (dans `.env.local` et Coolify, par Pierre), CV à télécharger (non publié sans son accord : il contient son téléphone), image d'aperçu de lien, statistiques sans cookie, relecture finale puis indexation (sitemap, canonical, JSON-LD, code 404).
 - Ancienne ligne, pour mémoire : validation par Pierre de la phase 5 (interactions) et du rendu low poly, puis phase 6 (finitions : tests responsive et accessibilité de l'exploration, vrais appareils, optimisation) et phase 7 (vraies informations).
 - Étape 8 faite sauf la branche `master` et la PR.
 - **À faire par Pierre** : créer `master` sur GitHub (interface web : menu des branches, saisir `master`, « Create branch from feat/mode-classique », puis Settings → Default branch), ou autoriser cette action. Ensuite Claude ouvre la PR ou repasse Coolify sur `master`.

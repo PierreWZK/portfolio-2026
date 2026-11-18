@@ -1,47 +1,39 @@
 import type { Future } from "./types";
 
-// CONTENU TEMPORAIRE : vision fictive, à remplacer en phase 7.
 export const future: Future = {
   title: "Le futur",
-  lead: "Ce que je crois du métier qui vient, et la place que je veux y prendre.",
+  lead: "Le métier change vite. Mon plan : continuer à apprendre, pour rester utile.",
   sections: [
     {
-      title: "Écrire moins de code, décider davantage",
+      title: "Dans un an",
       paragraphs: [
-        "Le développement logiciel se déplace. Taper du code devient la partie facile ; savoir quoi construire, pour qui, et quoi ne pas construire devient le vrai travail.",
-        "Je m'attends à des équipes plus petites, qui livrent plus, et où chacun porte une part de la conception.",
+        "Toujours au même endroit, mais pas tout à fait le même métier. L'IA change déjà la façon dont on code : même bureau, même café, un collègue de plus.",
       ],
     },
     {
-      title: "L'intelligence artificielle comme collègue",
+      title: "Dans cinq ans",
       paragraphs: [
-        "L'IA ne remplace pas le jugement, elle le rend plus nécessaire. Un outil qui produit vite produit aussi vite des erreurs convaincantes.",
-        "Je l'utilise comme un collègue rapide et distrait : je lui confie beaucoup, et je relis tout.",
+        "Plusieurs pistes me parlent : le DevOps, un rôle de lead technique, ou la formation, autour de l'UX et de l'IA. Former des clients me plaît déjà beaucoup ; former des étudiants serait la suite logique.",
       ],
     },
     {
-      title: "Des métiers qui se mélangent",
+      title: "Les projets qui m'attirent",
       paragraphs: [
-        "La frontière entre design, développement et produit s'efface. Les profils qui comptent seront ceux qui comprennent les trois, sans prétendre exceller partout.",
-      ],
-    },
-    {
-      title: "Un web plus léger",
-      paragraphs: [
-        "Je crois à un web qui revient à ses qualités d'origine : des pages rapides, lisibles partout, qui fonctionnent sur un vieux téléphone et une mauvaise connexion.",
-        "La 3D et l'animation y ont leur place, à condition de rester un choix du visiteur et jamais un péage.",
+        "Je suis ouvert à tout. En ce moment, ce qui me motive le plus, c'est de créer des sites pour des clients : comprendre un besoin, puis livrer quelque chose qu'ils peuvent vraiment utiliser.",
       ],
     },
     {
       title: "Ce que je veux apprendre",
       paragraphs: [
-        "Le rendu graphique en profondeur : shaders, WebGPU, simulation. Et, à l'opposé, l'écriture : expliquer clairement une idée technique reste la compétence la plus rare.",
+        "L'UX, l'IA et le DevOps. Trois domaines où le jugement humain compte encore, et où il y a toujours quelque chose de nouveau à lire.",
       ],
     },
     {
-      title: "Ce que je veux construire",
+      title: "Ce qui compte pour moi",
       paragraphs: [
-        "Un outil de cartographie libre pour les associations de montagne. Un atelier en ligne pour apprendre le dessin en caractères. Et, un jour, un petit studio où le code et le design se font à la même table.",
+        "L'autonomie, le respect des autres et l'envie d'apprendre, même après quinze ans dans le domaine.",
+        "Le code se lit bien plus souvent qu'il ne s'écrit. Je l'écris pour la personne qui le reprendra après moi : le Clean Code n'est pas une option, c'est la base.",
+        "Et je lis. Les livres contiennent des années de réflexion qu'aucun fil d'actualité ne remplace.",
       ],
     },
   ],
