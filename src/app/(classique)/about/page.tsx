@@ -13,6 +13,7 @@ import {
   profile,
   projects,
   realisations,
+  showCertifications,
   skillCategories,
 } from "@/content";
 
@@ -203,7 +204,7 @@ export default function About() {
       )}
 
       {/* Certifications */}
-      {certifications.length > 0 && (
+      {showCertifications && certifications.length > 0 && (
         <Section id="certifications" cmd="ls ~/certifications" title="Certifications" more={{ href: "/formations", label: "Mes formations" }}>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {certifications.map((c) => (

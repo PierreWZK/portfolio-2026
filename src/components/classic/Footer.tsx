@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MotionToggle } from "@/components/common/MotionToggle";
+import { profile } from "@/content";
 import { creationArt } from "./creationArt";
 
 /** Pied de page centré : « La Création d'Adam » en ASCII, puis les liens. */
@@ -31,7 +32,7 @@ export function Footer() {
           </Link>
           <MotionToggle />
         </div>
-        <p className="mt-2 font-mono text-xs text-muted">Contenu fictif temporaire.</p>
+        <p className="mt-2 font-mono text-xs text-muted">© 2026 {profile.brand}</p>
       </div>
     </footer>
   );

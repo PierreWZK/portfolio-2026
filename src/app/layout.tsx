@@ -19,7 +19,7 @@ const ascii = JetBrains_Mono({
 export const metadata: Metadata = {
   title: { default: `${profile.name} · Portfolio`, template: `%s · ${profile.name}` },
   description: profile.tagline,
-  // Contenu fictif : pas d'indexation avant la phase 7 (voir aussi robots.ts).
+  // Contenu en relecture : pas d'indexation avant la relecture finale (voir aussi robots.ts).
   robots: { index: false, follow: false },
 };
 
